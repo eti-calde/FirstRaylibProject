@@ -5,7 +5,7 @@
 #include "raygui.h"
 
 // Declaración de la función DrawMenu
-void DrawMenu(bool showMenu, int screenWidth, int screenHeight, const std::vector<Ball>& balls, int& selectedBallIndex);
+void DrawMenu(bool showMenu, int screenWidth, int screenHeight, const std::vector<Ball>& balls, int& selectedBallIndex, bool& dropdownActive);
 
 int main(void) {
     // Inicialización
@@ -14,7 +14,6 @@ int main(void) {
     InitWindow(screenWidth, screenHeight, "RayGui - Mostrar menú al presionar T");
     SetTargetFPS(60);
 
-    bool showMenu = false; // Controla si el menú está visible
     GuiSetStyle(DEFAULT, TEXT_SIZE, 28);
 
     std::vector<Ball> balls;
@@ -22,7 +21,10 @@ int main(void) {
     balls.emplace_back(200, 150, -2, 1, 25, "Bola Azul", BLUE);
     balls.emplace_back(300, 200, 1, -3, 30, "Bola Verde", GREEN);
 
-    int selectedBallIndex = 1; // Índice de la bola seleccionada, -1 significa ninguna
+    bool showMenu = false;  // Controla si el menú está visible
+    bool dropdownActive = false; // Estado del Dropdown
+    int selectedBallIndex = 0;  // Índice de la bola seleccionada (por defecto la primera bola)
+    int lastSelectedIndex = -1;
 
     // Bucle principal
     while (!WindowShouldClose()) {
@@ -46,7 +48,7 @@ int main(void) {
 
         // DRAW MENU || DRAW MENU || DRAW MENU
         if (showMenu) {
-            DrawMenu(showMenu, screenWidth, screenHeight, balls, selectedBallIndex);
+            DrawMenu(showMenu, screenWidth, screenHeight, balls, selectedBallIndex, dropdownActive);
         } else {
             // Mostrar mensaje inicial
             DrawText("Presione T para mostrar menú", screenWidth / 2 - MeasureText("Presione T para mostrar menú", 20) / 2, screenHeight / 2, 20, BLACK);
@@ -67,7 +69,7 @@ int main(void) {
 }
 
 
-void DrawMenu(bool showMenu, int screenWidth, int screenHeight, const std::vector<Ball>& balls, int& selectedBallIndex) {
+void DrawMenu(bool showMenu, int screenWidth, int screenHeight, const std::vector<Ball>& balls, int& selectedBallIndex, bool& dropdownActive) {
     if (!showMenu) return; // Si el menú no está activo, no dibujar nada
 
     // Dibujar fondo transparente
@@ -86,11 +88,23 @@ void DrawMenu(bool showMenu, int screenWidth, int screenHeight, const std::vecto
         if (i < balls.size() - 1) ballNames += ";"; // Separar nombres con ';'
     }
 
-    static bool dropdownActive = false; // Estado del Dropdown
-    const char* ballList = ballNames.c_str(); // Convertir nombres a C-string
+    // Dibujar el Dropdown y actualizar el índice seleccionado
     Rectangle dropdownBounds = { 20, 100, 200, 30 }; // Tamaño y posición del Dropdown
 
-    // Dibujar el Dropdown y actualizar el índice seleccionado
-    selectedBallIndex = GuiDropdownBox(dropdownBounds, ballList, &selectedBallIndex, dropdownActive);
+    // Control del Dropdown
+    const char* ballList = ballNames.c_str(); // Convertir nombres a C-string
 
+    // Si el Dropdown está activo, mantenerlo desplegado (editMode = true)
+    if (dropdownActive) {
+        // Mantener el menú desplegado y permitir la selección
+        if (GuiDropdownBox(dropdownBounds, ballList, &selectedBallIndex, true)) {
+            dropdownActive = false; // Cerrar el Dropdown después de la selección
+        }
+    } else {
+        // Dibujar el Dropdown en modo colapsado
+        if (GuiDropdownBox(dropdownBounds, ballList, &selectedBallIndex, false)) {
+            dropdownActive = true; // Abrir el Dropdown al hacer clic
+        }
+    }
 }
+
