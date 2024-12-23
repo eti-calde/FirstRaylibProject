@@ -1,29 +1,27 @@
 #pragma once
 
-#include <string> // Para usar std::string
-#include <raylib.h> // Para usar Color
+#include <string>
+#include <raylib.h>
 
 class Ball
 {
 public:
-    // Constructor actualizado
     Ball(float positionX, float positionY, float speedX, float speedY, float radius, const std::string& name, Color color);
 
     void Update();
     void Draw() const;
+    
     const std::string& GetName() const;
+    float GetRadius() const;
+    float GetSpeedX() const;
+    float GetSpeedY() const;
+    Color GetColor() const;
 
-    // Métodos para el radio
-    // float GetRadius() const;
-    // void SetRadius(float newRadius);
 
-    // Métodos para el nombre
-    // const std::string& GetName() const;
-    // void SetName(const std::string& newName);
-
-    // Métodos para el color
-    // Color GetColor() const;
-    // void SetColor(Color newColor);
+    void SetRadius(float newRadius);
+    void SetSpeedX(float newSpeedX);
+    void SetSpeedY(float newSpeedY);
+    void SetColor(Color newColor);
 
 private:
     float positionX;
@@ -31,6 +29,6 @@ private:
     float speedX;
     float speedY;
     float radius;
-    std::string name; // Nombre de la bola
-    Color color;      // Color de la bola
+    std::string name;
+    Color color;
 };
