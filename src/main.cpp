@@ -176,4 +176,3 @@ void DrawMenu(bool showMenu, int screenWidth, int screenHeight, std::vector<Ball
         }
     }
 }
-
